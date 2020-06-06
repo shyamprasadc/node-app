@@ -1,21 +1,29 @@
 const express = require("express");
 const app = express();
 
+const config = require("config");
+// const startupDebugger  = require("debug")("app:startup");
+// const dbDebugger  = require("debug")("app:db");
 const helmet = require('helmet');
 const morgan = require('morgan');
 const Joi = require("joi");
 
 const logger = require("./logger");
 
-// console.log(`NODE ENV: ${process.env.NODE_ENV}`)
-// console.log(`app: ${app.get("env")}`)
+console.log(`NODE ENV: ${process.env.NODE_ENV}`);
 
 app.use(express.json()); //req.body json parser
 app.use(express.urlencoded({ extended: true })); //req.body urlencoded parser
 app.use(express.static('public'));
 app.use(helmet());
 
+//configuration
+console.log("Application Name:" + config.get("name"));
+console.log("Mail Server:" + config.get("mail.host"));
+// console.log("Mail Password:" + config.get("mail.password")); 
+
 if (app.get("env") === "development"){
+  // startupDebugger("morgan enabled")
   console.log("Morgan is enabled")
   app.use(morgan("tiny"));  
 }
@@ -26,26 +34,6 @@ app.use((req,res,next) => {
 console.log("Authenticating..");
 next();
 });
-
-// const MongoClient = require("mongodb").MongoClient;
-// const connection_string = "mongodb://localhost:27017";
-
-// MongoClient.connect(
-//   connection_string,
-//   { useUnifiedTopology: true },
-//   (err, client) => {
-//     if (err) throw error;
-//     console.log("connection to mongo db");
-//     var db = client.db("blog");
-//     db.collection("posts")
-//       .find({})
-//       .toArray((err, result) => {
-//         if (err) throw error;
-//         console.log(result);
-//         client.close();
-//       });
-//   }
-// );
 
 const courses = [
   { id: 1, name: "course1" },
